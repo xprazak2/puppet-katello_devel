@@ -17,7 +17,7 @@ class katello_devel::setup {
       cwd       => $::katello_devel::foreman_dir,
       user      => $::katello_devel::user,
       logoutput => 'on_failure',
-      path      => '/usr/local/rvm/bin:/usr/bin:/bin:/usr/bin/env',
+      path      => "/home/${::katello_devel::user}/.rvm/bin:/usr/bin:/bin",
     } ->
     katello_devel::rvm_bundle { 'exec rake webpack:compile': } ->
     katello_devel::rvm_bundle { 'exec rake db:migrate': } ->
