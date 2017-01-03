@@ -11,6 +11,13 @@ class katello_devel::setup {
 
     class { '::katello_devel::rvm': } ->
     katello_devel::rvm_bundle { 'install --without mysql:mysql2 --retry 3': } ->
+    exec { 'npm install':
+      cwd       => $::katello_devel::foreman_dir,
+      user      => $::katello_devel::user,
+      logoutput => 'on_failure',
+      path      => '/usr/local/rvm/bin:/usr/bin:/bin:/usr/bin/env',
+    } ->
+    katello_devel::rvm_bundle { 'exec rake webpack:compile': } ->
     katello_devel::rvm_bundle { 'exec rake db:migrate': } ->
     katello_devel::rvm_bundle { 'exec rake db:seed':
       environment => $seed_env,
@@ -21,7 +28,7 @@ class katello_devel::setup {
       user      => $::katello_devel::user,
       logoutput => 'on_failure',
       timeout   => '600',
-      path      => '/usr/local/rvm/bin:/usr/bin:/bin:/usr/bin/env',
+      path      => '/usr/local/rvm/bin:/usr/bin:/bin',
       unless    =>  'ps -p `cat tmp/pids/server.pid`',
       before    => Class['foreman_proxy::register'],
     }
