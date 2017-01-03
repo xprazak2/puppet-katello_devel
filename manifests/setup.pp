@@ -12,7 +12,7 @@ class katello_devel::setup {
     ]
 
     class { '::katello_devel::rvm': } ->
-    katello_devel::rvm_bundle { 'install --without mysql:mysql2 --retry 3': } ->
+    katello_devel::rvm_bundle { 'install --without mysql:mysql2 --retry 3 --jobs 3': } ->
     exec { 'npm install':
       cwd       => $::katello_devel::foreman_dir,
       user      => $::katello_devel::user,
