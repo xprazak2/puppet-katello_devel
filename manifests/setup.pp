@@ -1,7 +1,7 @@
 # Handles initialization and setup of the Rails app
 class katello_devel::setup {
 
-  if $katello_devel::use_rvm {
+  if $::katello_devel::use_rvm or $::katello_devel::manage_bundler {
 
     $pidfile = "${::katello_devel::foreman_dir}/tmp/pids/server.pid"
 
@@ -11,20 +11,19 @@ class katello_devel::setup {
       "SEED_ADMIN_PASSWORD=${::katello_devel::admin_password}",
     ]
 
-    class { '::katello_devel::rvm': } ->
-    katello_devel::rvm_bundle { 'install --without mysql:mysql2 --retry 3 --jobs 3': } ->
+    katello_devel::bundle { 'install --without mysql:mysql2 --retry 3 --jobs 3': } ->
     exec { 'npm install':
       cwd       => $::katello_devel::foreman_dir,
       user      => $::katello_devel::user,
       logoutput => 'on_failure',
       path      => "/home/${::katello_devel::user}/.rvm/bin:/usr/bin:/bin",
     } ->
-    katello_devel::rvm_bundle { 'exec rake webpack:compile': } ->
-    katello_devel::rvm_bundle { 'exec rake db:migrate': } ->
-    katello_devel::rvm_bundle { 'exec rake db:seed':
+    katello_devel::bundle { 'exec rake webpack:compile': } ->
+    katello_devel::bundle { 'exec rake db:migrate': } ->
+    katello_devel::bundle { 'exec rake db:seed':
       environment => $seed_env,
     } ~>
-    katello_devel::rvm_bundle { 'exec rails s -d':
+    katello_devel::bundle { 'exec rails s -d':
       unless => "/usr/bin/pgrep --pidfile ${pidfile}",
     } ->
     Class['foreman_proxy::register'] ->
