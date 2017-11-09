@@ -12,11 +12,10 @@ class katello_devel::setup {
     ]
 
     katello_devel::bundle { 'install --without mysql:mysql2 --retry 3 --jobs 3': } ->
-    exec { 'npm install':
+    exec { '/usr/bin/env npm install':
       cwd       => $::katello_devel::foreman_dir,
       user      => $::katello_devel::user,
       logoutput => 'on_failure',
-      path      => "/home/${::katello_devel::user}/.rvm/bin:/usr/bin:/bin",
     } ->
     katello_devel::bundle { 'exec rake webpack:compile': } ->
     katello_devel::bundle { 'exec rake db:migrate': } ->
