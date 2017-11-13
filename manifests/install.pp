@@ -6,8 +6,9 @@ class katello_devel::install {
   }
 
   katello_devel::git_repo { 'foreman':
-    source          => 'theforeman/foreman',
+    source          => 'xprazak2/foreman',
     github_username => $katello_devel::github_username,
+    rev => 'xprazak2/install-plugins-debug'
   }
 
 }

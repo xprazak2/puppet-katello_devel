@@ -3,6 +3,7 @@ define katello_devel::git_repo(
   String $source,
   $github_username = undef,
   $upstream_remote_name = $katello_devel::upstream_remote_name,
+  $rev = undef,
 ) {
 
   if $github_username != undef {
@@ -17,12 +18,22 @@ define katello_devel::git_repo(
     $sources = {"${upstream_remote_name}" => "https://github.com/${source}.git"}
   }
 
-  vcsrepo { "${katello_devel::deployment_dir}/${title}":
-    ensure   => present,
-    provider => git,
-    remote   => $upstream_remote_name,
-    source   => $sources,
-    user     => $katello_devel::user,
+  if $rev != undef {
+    vcsrepo { "${katello_devel::deployment_dir}/${title}":
+      ensure   => present,
+      provider => git,
+      remote   => $upstream_remote_name,
+      source   => $sources,
+      user     => $katello_devel::user,
+      revision => $rev,
+    }
+  } else {
+    vcsrepo { "${katello_devel::deployment_dir}/${title}":
+      ensure   => present,
+      provider => git,
+      remote   => $upstream_remote_name,
+      source   => $sources,
+      user     => $katello_devel::user,
+    }
   }
-
 }
